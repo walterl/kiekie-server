@@ -2,7 +2,8 @@ from django.contrib.auth import (
     authenticate, login as auth_login, logout as auth_logout)
 from django.contrib.auth.models import User
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -16,6 +17,7 @@ class PictureViewSet(ModelViewSet):
 
 
 @api_view(['POST'])
+@permission_classes((AllowAny,))
 def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
@@ -37,6 +39,7 @@ def logout(request):
 
 
 @api_view(['POST'])
+@permission_classes((AllowAny,))
 def api_register(request):
     username = request.data.get('username')
     password = request.data.get('password')

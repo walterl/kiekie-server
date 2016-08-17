@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from rest_framework import status
+from rest_framework import exceptions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -40,3 +40,10 @@ def api_register(request):
     user = User.objects.create_user(username, email, password)
     token = Token.objects.create(user=user)
     return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+
+
+@api_view()
+def echo_auth_token(request):
+    if not request.user.is_authenticated:
+        raise exceptions.NotAuthenticated
+    return Response({'token': request.user.auth_token.key})

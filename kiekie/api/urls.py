@@ -10,6 +10,7 @@ router.register('pics', views.PictureViewSet)
 
 urlpatterns = [
     url('^user/login$', obtain_auth_token),
+    url('^user/echo_token$', views.echo_auth_token),
     url('^user/register$', views.api_register),
     url('', include(router.urls)),
 ]

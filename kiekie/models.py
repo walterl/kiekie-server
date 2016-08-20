@@ -21,6 +21,10 @@ class Picture(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def filename(self):
+        return os.path.split(self.file.name)[1]
+
     def __str__(self):
         flagged, note = '', ''
         if self.flagged:

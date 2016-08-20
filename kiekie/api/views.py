@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
+from django.http import FileResponse
 from rest_framework import exceptions, status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import (
+    api_view, detail_route, permission_classes)
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -14,6 +16,14 @@ class PictureViewSet(ModelViewSet):
 
     def get_queryset(self):
         return self.request.user.pictures.all()
+
+    @detail_route()
+    def download(self, request, pk=None):
+        pic = self.get_object()
+        response = FileResponse(pic.file)
+        response['Content-Disposition'] = 'attachment; filename={}'.format(
+            pic.filename)
+        return response
 
 
 @api_view(['POST'])

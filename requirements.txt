@@ -2,3 +2,4 @@ Django==1.10
 django-cors-headers==1.1.0
 django-extensions==1.7.1
 djangorestframework==3.4.4
+Pillow==3.3.1

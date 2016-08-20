@@ -6,7 +6,7 @@ from kiekie.api import views
 
 
 router = DefaultRouter()
-router.register('pics', views.PictureViewSet)
+router.register('pics', views.PictureViewSet, base_name='Picture')
 
 urlpatterns = [
     url('^user/login$', obtain_auth_token),

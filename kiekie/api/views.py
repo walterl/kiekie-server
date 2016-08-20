@@ -6,13 +6,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from kiekie.models import Picture
 from kiekie.api.serializers import PictureSerializer
 
 
 class PictureViewSet(ModelViewSet):
-    queryset = Picture.objects.all()
     serializer_class = PictureSerializer
+
+    def get_queryset(self):
+        return self.request.user.pictures.all()
 
 
 @api_view(['POST'])

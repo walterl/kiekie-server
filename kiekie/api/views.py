@@ -1,3 +1,5 @@
+import mimetypes
+
 from django.contrib.auth.models import User
 from django.http import FileResponse
 from rest_framework import exceptions, status
@@ -23,6 +25,7 @@ class PictureViewSet(ModelViewSet):
         response = FileResponse(pic.file)
         response['Content-Disposition'] = 'attachment; filename={}'.format(
             pic.filename)
+        response['Content-type'] = mimetypes.guess_type(pic.file.path)[0]
         return response
 
 

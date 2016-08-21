@@ -11,6 +11,9 @@ def pic_upload_path(instance, filename):
 
 
 class Picture(models.Model):
+    class Meta:
+        ordering = ['-modified_at']
+
     id = UUIDField(version=4, auto=True, primary_key=True)
     owner = models.ForeignKey(User, related_name='pictures')
     file = models.ImageField(upload_to=pic_upload_path)

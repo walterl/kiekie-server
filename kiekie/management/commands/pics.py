@@ -46,6 +46,7 @@ class Command(BaseCommand):
             _, fname_nodir = os.path.split(fname)
             pic = Picture.objects.create(owner=user, note=options['note'])
             pic.file.save(fname_nodir, File(open(fname, 'rb')))
+            output.append(pic)
         elif options['delete']:
             pic = self.get_pic(options['delete'])
             pic.delete()

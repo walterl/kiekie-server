@@ -17,7 +17,7 @@ class PictureViewSet(ModelViewSet):
     serializer_class = PictureSerializer
 
     def get_queryset(self):
-        return self.request.user.pictures.all()
+        return self.request.user.pictures.filter(flagged=False).all()
 
     @detail_route()
     def download(self, request, pk=None):

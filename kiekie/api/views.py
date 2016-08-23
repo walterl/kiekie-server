@@ -19,6 +19,12 @@ class PictureViewSet(ModelViewSet):
     def get_queryset(self):
         return self.request.user.pictures.filter(flagged=False).all()
 
+    def perform_create(self, serializer):
+        serializer.validated_data['id'] = self.request.data['id']
+        self.update_new_file_name(serializer.validated_data['file'])
+        serializer.validated_data['owner'] = self.request.user
+        serializer.save()
+
     @detail_route()
     def download(self, request, pk=None):
         pic = self.get_object()
@@ -27,6 +33,19 @@ class PictureViewSet(ModelViewSet):
             pic.filename)
         response['Content-type'] = mimetypes.guess_type(pic.file.path)[0]
         return response
+
+    def update_new_file_name(self, upfile):
+        if upfile.content_type == 'image/jpeg':
+            # This is just to make sure that JPEGs get .jpg extension, and not
+            # .jpe or .jpeg.
+            ext = '.jpg'
+        else:
+            try:
+                ext = [ext for ext, content_type in mimetypes.types_map.items()
+                       if content_type == upfile.content_type][0]
+            except IndexError:
+                ext = None
+        upfile.name = self.request.data['id'] + ext
 
 
 @api_view(['POST'])

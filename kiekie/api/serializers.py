@@ -7,7 +7,8 @@ from kiekie.models import Picture
 class PictureSerializer(ModelSerializer):
     class Meta:
         model = Picture
-        exclude = ('file', 'owner', 'flagged', 'num_views')
+        exclude = ('owner', 'flagged', 'num_views')
+        extra_kwargs = {'file': {'write_only': True}}
 
     download = HyperlinkedIdentityField(view_name='Picture-download')
-    filename = CharField()
+    filename = CharField(read_only=True)

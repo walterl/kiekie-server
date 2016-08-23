@@ -35,7 +35,11 @@ class Picture(models.Model):
         if self.note:
             note = ' ' + repr(self.note)
 
+        filename, filesize = '<nofile>', -1
+        if self.file:
+            filename, filesize = self.file.name, self.file.size
+
         return '{f}{id} #{nviews} {owner} {size}{note}'.format(
             id=self.id, f=flagged, nviews=self.num_views,
-            owner=self.owner.username, filename=self.file.name,
-            size=self.file.size, note=note)
+            owner=self.owner.username, filename=filename, size=filesize,
+            note=note)

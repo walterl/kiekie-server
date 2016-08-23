@@ -25,6 +25,13 @@ class PictureViewSet(ModelViewSet):
         serializer.validated_data['owner'] = self.request.user
         serializer.save()
 
+    def update(self, request, pk=None):
+        pic = self.get_object()
+        pic.note = request.data.get('note')
+        pic.save()
+        srl = PictureSerializer(pic, context={'request': request})
+        return Response(srl.data)
+
     @detail_route()
     def download(self, request, pk=None):
         pic = self.get_object()

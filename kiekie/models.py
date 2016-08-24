@@ -18,6 +18,7 @@ class Picture(models.Model):
     owner = models.ForeignKey(User, related_name='pictures')
     file = models.ImageField(upload_to=pic_upload_path)
     note = models.TextField(blank=True, null=True)
+    deleted = models.BooleanField(default=False)
     flagged = models.BooleanField(default=False)
     num_views = models.IntegerField(default=0)
 
@@ -29,9 +30,11 @@ class Picture(models.Model):
         return os.path.split(self.file.name)[1]
 
     def __str__(self):
-        flagged, note = '', ''
+        flags, note = '', ''
+        if self.deleted:
+            flags += '[X]'
         if self.flagged:
-            flagged = '!!'
+            flags += '[!]'
         if self.note:
             note = ' ' + repr(self.note)
 
@@ -40,6 +43,6 @@ class Picture(models.Model):
             filename, filesize = self.file.name, self.file.size
 
         return '{f}{id} #{nviews} {owner} {size}{note}'.format(
-            id=self.id, f=flagged, nviews=self.num_views,
+            id=self.id, f=flags, nviews=self.num_views,
             owner=self.owner.username, filename=filename, size=filesize,
             note=note)

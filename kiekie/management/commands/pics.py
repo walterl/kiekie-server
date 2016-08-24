@@ -17,7 +17,7 @@ class Command(BaseCommand):
         commands.add_argument('--list', '-l', action='store_true',
                               help='List all pictures.')
         commands.add_argument('--delete', '-D', metavar='PICTURE_ID',
-                              help='Delete a picture.')
+                              help='Delete/undelete a picture.')
         commands.add_argument('--flag', '-f', metavar='PICTURE_ID',
                               help='Flag/unflag a picture.')
 
@@ -49,7 +49,8 @@ class Command(BaseCommand):
             output.append(pic)
         elif options['delete']:
             pic = self.get_pic(options['delete'])
-            pic.delete()
+            pic.deleted = not pic.deleted
+            pic.save()
             output.append(pic)
         elif options['flag']:
             pic = self.get_pic(options['flag'])

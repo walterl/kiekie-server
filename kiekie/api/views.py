@@ -34,6 +34,9 @@ class PictureViewSet(ModelViewSet):
 
     def update(self, request, pk=None):
         pic = self.get_object()
+        if pic.owner != request.user:
+            raise PermissionDenied
+
         pic.note = request.data.get('note')
         pic.save()
         srl = PictureSerializer(pic, context={'request': request})

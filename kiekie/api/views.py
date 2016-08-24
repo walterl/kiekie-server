@@ -17,7 +17,8 @@ class PictureViewSet(ModelViewSet):
     serializer_class = PictureSerializer
 
     def get_queryset(self):
-        return self.request.user.pictures.filter(flagged=False).all()
+        return self.request.user.pictures.filter(
+            deleted=False, flagged=False).all()
 
     def perform_create(self, serializer):
         serializer.validated_data['id'] = self.request.data['id']

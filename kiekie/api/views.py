@@ -42,6 +42,10 @@ class PictureViewSet(ModelViewSet):
         serializer.validated_data['owner'] = self.request.user
         serializer.save()
 
+    def perform_destroy(self, instance):
+        instance.deleted = True
+        instance.save()
+
     @detail_route()
     def download(self, request, pk=None):
         pic = self.get_object()

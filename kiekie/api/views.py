@@ -22,16 +22,6 @@ class PictureViewSet(ModelViewSet):
         return self.request.user.pictures.filter(
             deleted=False, flagged=False).all()
 
-    def perform_create(self, serializer):
-        pic_id = self.request.data['id']
-        if Picture.objects.filter(id=pic_id).exists():
-            raise PermissionDenied
-
-        serializer.validated_data['id'] = self.request.data['id']
-        self.update_new_file_name(serializer.validated_data['file'])
-        serializer.validated_data['owner'] = self.request.user
-        serializer.save()
-
     def update(self, request, pk=None):
         pic = self.get_object()
         if pic.owner != request.user:
@@ -41,6 +31,16 @@ class PictureViewSet(ModelViewSet):
         pic.save()
         srl = PictureSerializer(pic, context={'request': request})
         return Response(srl.data)
+
+    def perform_create(self, serializer):
+        pic_id = self.request.data['id']
+        if Picture.objects.filter(id=pic_id).exists():
+            raise PermissionDenied
+
+        serializer.validated_data['id'] = self.request.data['id']
+        self.update_new_file_name(serializer.validated_data['file'])
+        serializer.validated_data['owner'] = self.request.user
+        serializer.save()
 
     @detail_route()
     def download(self, request, pk=None):

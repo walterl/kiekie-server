@@ -6,11 +6,13 @@ from rest_framework import exceptions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import (
     api_view, detail_route, permission_classes)
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from kiekie.api.serializers import PictureSerializer
+from kiekie.models import Picture
 
 
 class PictureViewSet(ModelViewSet):
@@ -21,6 +23,10 @@ class PictureViewSet(ModelViewSet):
             deleted=False, flagged=False).all()
 
     def perform_create(self, serializer):
+        pic_id = self.request.data['id']
+        if Picture.objects.filter(id=pic_id).exists():
+            raise PermissionDenied
+
         serializer.validated_data['id'] = self.request.data['id']
         self.update_new_file_name(serializer.validated_data['file'])
         serializer.validated_data['owner'] = self.request.user

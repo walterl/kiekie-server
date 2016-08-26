@@ -27,21 +27,27 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         output = []
+        user = None
 
-        if options['list']:
-            output = list(Picture.objects.all())
-        elif options['add']:
-            fname = options['add']
-            if not os.path.isfile(fname):
-                raise CommandError('Invalid file name: {}'.format(fname))
-
-            if not options['user']:
-                raise CommandError('--user required to add a file.')
+        if options['user']:
             try:
                 user = User.objects.get(username=options['user'])
             except User.DoesNotExist:
                 raise CommandError('Invalid user name: {}'.format(
                     options['user']))
+
+        if options['list']:
+            pics = Picture.objects.all()
+            if user:
+                pics = pics.filter(owner=user)
+            output = list(pics)
+        elif options['add']:
+            fname = options['add']
+            if not os.path.isfile(fname):
+                raise CommandError('Invalid file name: {}'.format(fname))
+
+            if not user:
+                raise CommandError('--user required to add a file.')
 
             _, fname_nodir = os.path.split(fname)
             pic = Picture.objects.create(owner=user, note=options['note'])

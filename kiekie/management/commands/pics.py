@@ -37,37 +37,49 @@ class Command(BaseCommand):
                     options['user']))
 
         if options['list']:
-            pics = Picture.objects.all()
-            if user:
-                pics = pics.filter(owner=user)
-            output = list(pics)
+            output = self.list_pics(user)
         elif options['add']:
-            fname = options['add']
-            if not os.path.isfile(fname):
-                raise CommandError('Invalid file name: {}'.format(fname))
-
-            if not user:
-                raise CommandError('--user required to add a file.')
-
-            _, fname_nodir = os.path.split(fname)
-            pic = Picture.objects.create(owner=user, note=options['note'])
-            pic.file.save(fname_nodir, File(open(fname, 'rb')))
-            output.append(pic)
+            output.append(self.add_pic(options['add'], user, options['note']))
         elif options['delete']:
-            pic = self.get_pic(options['delete'])
-            pic.deleted = not pic.deleted
-            pic.save()
-            output.append(pic)
+            output.append(self.delete_pic(options['delete']))
         elif options['flag']:
-            pic = self.get_pic(options['flag'])
-            pic.flagged = not pic.flagged
-            pic.save()
-            output.append(pic)
+            output.append(self.flag_pic(options['flag']))
         else:
-            raise CommandError('Specify command (--)add or (--)list')
+            raise CommandError(
+                'Specify command (--)add, (--)delete, (--)flag or (--)list')
 
         for pic in output:
             self.stdout.write(str(pic))
+
+    def add_pic(self, fname, user, note):
+        if not os.path.isfile(fname):
+            raise CommandError('Invalid file name: {}'.format(fname))
+
+        if not user:
+            raise CommandError('--user required to add a file.')
+
+        _, fname_nodir = os.path.split(fname)
+        pic = Picture.objects.create(owner=user, note=note)
+        pic.file.save(fname_nodir, File(open(fname, 'rb')))
+        return pic
+
+    def delete_pic(self, pic_id):
+        pic = self.get_pic(pic_id)
+        pic.deleted = not pic.deleted
+        pic.save()
+        return pic
+
+    def flag_pic(self, pic_id):
+        pic = self.get_pic(pic_id)
+        pic.flagged = not pic.flagged
+        pic.save()
+        return pic
+
+    def list_pics(self, user=None):
+        pics = Picture.objects.all()
+        if user:
+            pics = pics.filter(owner=user)
+        return list(pics)
 
     def get_pic(self, pic_id):
         try:

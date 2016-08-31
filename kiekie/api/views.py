@@ -101,3 +101,9 @@ def echo_auth_token(request):
     if not request.user.is_authenticated:
         raise exceptions.NotAuthenticated
     return Response({'token': request.user.auth_token.key})
+
+
+@api_view()
+@permission_classes((AllowAny,))
+def ping(request):
+    return Response({'server': 'Kiekie', 'pong': True})
